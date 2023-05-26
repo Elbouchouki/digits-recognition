@@ -6,6 +6,9 @@ data = pd.read_csv('data/train.csv')
 data_test = pd.read_csv('data/test.csv')
 
 data = np.array(data)
+
+np.random.shuffle(data)
+
 data_test = np.array(data_test)
 
 m, n = data.shape
@@ -127,6 +130,13 @@ def make_predictions(X, W1, b1, W2, b2):
     return predictions
 
 
+def make_predictions_percentage(X, W1, b1, W2, b2):
+    _, _, _, A2 = forward_prop(W1, b1, W2, b2, X)
+    predictions = get_predictions(A2)
+    percentage = np.max(A2) * 100
+    return predictions, percentage
+
+
 def test_prediction(index, W1, b1, W2, b2):
     current_image = X_train[:, index, None]
     prediction = make_predictions(X_train[:, index, None], W1, b1, W2, b2)
@@ -142,8 +152,10 @@ def test_prediction(index, W1, b1, W2, b2):
 
 def blind_prediction(index, W1, b1, W2, b2):
     current_image = X_test[:, index, None]
-    prediction = make_predictions(X_test[:, index, None], W1, b1, W2, b2)
+    prediction, percentage = make_predictions_percentage(
+        X_test[:, index, None], W1, b1, W2, b2)
     print("Prediction: ", prediction)
+    print("Percentage: ", percentage)
 
     current_image = current_image.reshape((28, 28)) * 255
     plt.gray()
@@ -167,17 +179,19 @@ def load_modal():
 
 
 if __name__ == "__main__":
-    W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 0.10, 400)
+    W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 0.10, 600)
     save_modal(W1, b1, W2, b2)
-    # test_prediction(0, W1, b1, W2, b2)
-    # test_prediction(1, W1, b1, W2, b2)
-    # test_prediction(2, W1, b1, W2, b2)
-    # test_prediction(3, W1, b1, W2, b2)
 
-    # blind_prediction(0, W1, b1, W2, b2)
-    # blind_prediction(20, W1, b1, W2, b2)
-    # blind_prediction(40, W1, b1, W2, b2)
-    # blind_prediction(60, W1, b1, W2, b2)
+    W1, b1, W2, b2 = load_modal()
+    test_prediction(0, W1, b1, W2, b2)
+    test_prediction(1, W1, b1, W2, b2)
+    test_prediction(2, W1, b1, W2, b2)
+    test_prediction(3, W1, b1, W2, b2)
+
+    blind_prediction(0, W1, b1, W2, b2)
+    blind_prediction(20, W1, b1, W2, b2)
+    blind_prediction(40, W1, b1, W2, b2)
+    blind_prediction(60, W1, b1, W2, b2)
 
     dev_predictions = make_predictions(X_dev, W1, b1, W2, b2)
-    print(get_accuracy(dev_predictions, Y_dev))
+    print("accurency: ", get_accuracy(dev_predictions, Y_dev))

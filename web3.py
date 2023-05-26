@@ -32,6 +32,13 @@ def make_predictions(X, W1, b1, W2, b2, W3, b3):
     return predictions
 
 
+def make_predictions_percentage(X, W1, b1, W2, b2, W3, b3):
+    _, _, _, _, _, A3 = forward_prop(W1, b1, W2, b2, W3, b3, X)
+    predictions = get_predictions(A3)
+    percentage = np.max(A3) * 100
+    return predictions, percentage
+
+
 def load_model():
     W1 = np.load('model/tree_layers/W1.npy')
     b1 = np.load('model/tree_layers/b1.npy')
@@ -61,5 +68,7 @@ if uploaded_file is not None:
     input_image = image.reshape((784, 1))
 
     if st.button('Predict'):
-        prediction = make_predictions(input_image, W1, b1, W2, b2, W3, b3)
-        st.write('prediction: ', prediction)
+        prediction, percentage = make_predictions_percentage(
+            input_image, W1, b1, W2, b2, W3, b3)
+        st.write('prediction: ', prediction[0])
+        st.write('percentage: ', percentage)

@@ -30,6 +30,13 @@ def make_predictions(X, W1, b1, W2, b2):
     return predictions
 
 
+def make_predictions_percentage(X, W1, b1, W2, b2):
+    _, _, _, A2 = forward_prop(W1, b1, W2, b2, X)
+    predictions = get_predictions(A2)
+    percentage = np.max(A2) * 100
+    return predictions, percentage
+
+
 def load_modal_2l():
     W1 = np.load('model/two_layers/W1.npy')
     b1 = np.load('model/two_layers/b1.npy')
@@ -62,10 +69,18 @@ if uploaded_file is not None:
     W1, b1, W2, b2 = load_modal_2l()
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
     opencv_image = cv2.imdecode(file_bytes, 1)
+
     st.image(opencv_image, width=400)
+
+    if opencv_image.shape != (28, 28, 3):
+        st.warning('No no no, image size must be 28x28!!!')
+        st.stop()
+
     image = load_image(opencv_image)
     input_image = image.reshape((784, 1))
 
     if st.button('Predict'):
-        prediction = make_predictions(input_image, W1, b1, W2, b2)
-        st.write('prediction: ', prediction)
+        prediction, percentage = make_predictions_percentage(
+            input_image, W1, b1, W2, b2)
+        st.write('prediction: ', prediction[0])
+        st.write('percentage: ', percentage)

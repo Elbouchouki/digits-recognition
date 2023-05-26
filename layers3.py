@@ -123,6 +123,13 @@ def make_predictions(X, W1, b1, W2, b2, W3, b3):
     return predictions
 
 
+def make_predictions_percentage(X, W1, b1, W2, b2, W3, b3):
+    _, _, _, _, _, A3 = forward_prop(W1, b1, W2, b2, W3, b3, X)
+    predictions = get_predictions(A3)
+    percentage = np.max(A3) * 100
+    return predictions, percentage
+
+
 def test_prediction(index, W1, b1, W2, b2, W3, b3):
     current_image = X_train[:, index, None]
     prediction = make_predictions(
@@ -139,10 +146,10 @@ def test_prediction(index, W1, b1, W2, b2, W3, b3):
 
 def blind_prediction(index, W1, b1, W2, b2, W3, b3):
     current_image = X_test[:, index, None]
-    prediction = make_predictions(
+    prediction, percentage = make_predictions_percentage(
         X_test[:, index, None], W1, b1, W2, b2, W3, b3)
     print("Prediction: ", prediction)
-
+    print("Percentage: ", percentage)
     current_image = current_image.reshape((28, 28)) * 255
     plt.gray()
     plt.imshow(current_image, interpolation='nearest')
@@ -161,15 +168,15 @@ def save_model(W1, b1, W2, b2, W3, b3):
 if __name__ == "__main__":
     W1, b1, W2, b2, W3, b3 = gradient_descent(X_train, Y_train, 0.10, 600)
 
-    # test_prediction(0, W1, b1, W2, b2, W3, b3)
-    # test_prediction(1, W1, b1, W2, b2, W3, b3)
-    # test_prediction(2, W1, b1, W2, b2, W3, b3)
-    # test_prediction(3, W1, b1, W2, b2, W3, b3)
+    test_prediction(0, W1, b1, W2, b2, W3, b3)
+    test_prediction(1, W1, b1, W2, b2, W3, b3)
+    test_prediction(2, W1, b1, W2, b2, W3, b3)
+    test_prediction(3, W1, b1, W2, b2, W3, b3)
 
-    # blind_prediction(0, W1, b1, W2, b2, W3, b3)
-    # blind_prediction(20, W1, b1, W2, b2, W3, b3)
-    # blind_prediction(40, W1, b1, W2, b2, W3, b3)
-    # blind_prediction(60, W1, b1, W2, b2, W3, b3)
+    blind_prediction(0, W1, b1, W2, b2, W3, b3)
+    blind_prediction(20, W1, b1, W2, b2, W3, b3)
+    blind_prediction(40, W1, b1, W2, b2, W3, b3)
+    blind_prediction(60, W1, b1, W2, b2, W3, b3)
 
     dev_predictions = make_predictions(X_dev, W1, b1, W2, b2, W3, b3)
     print(get_accuracy(dev_predictions, Y_dev))
